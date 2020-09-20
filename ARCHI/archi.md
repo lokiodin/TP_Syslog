@@ -3,6 +3,7 @@
 ## Vocabulaire
 
 | Mot utilisé | Explication |
+| ------------- | ------------- |
 | SB | Site de Backup |
 | SP | Site Principal |
 | SD | Site de Dévolution |
@@ -29,6 +30,7 @@ Schéma de l'implantation des sites :
 
 Les particularité des divers sites :
 Type de site | Nom complet du site | Explication | Particularité |
+| ------------- | ------------- | ------------- | ------------- |
 SB | Site de Backup | Site de backup des sauvegardes et coffres numériques |
 SP | Site Principal | Site central de l'infrastructure et de service de M&A Inc. |
 SD | Site de Dévolution | Site de survie de M&A Inc., contient une réplication de l'infrastructure et services nécessaires en cas de coupure sur SP |
