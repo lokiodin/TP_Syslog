@@ -2,14 +2,14 @@
 
 ## Vocabulaire
 
-Mot utilisé | Explication
-SB | Site de Backup
-SP | Site Principal
-SD | Site de Dévolution
-SA | Site Autonome
-SL | Site Local
-SM | Site Mobile 
-relay-[SB|SP|SD|SA|SL|SM] | Serveur Syslog du site en question
+| Mot utilisé | Explication |
+| SB | Site de Backup |
+| SP | Site Principal |
+| SD | Site de Dévolution |
+| SA | Site Autonome |
+| SL | Site Local |
+| SM | Site Mobile  |
+| relay-[SB|SP|SD|SA|SL|SM] | Serveur Syslog du site en question |
 
 
 ## Contexte
@@ -28,13 +28,13 @@ Schéma de l'implantation des sites :
 ### Explication
 
 Les particularité des divers sites :
-Type de site | Nom complet du site | Explication | Particularité
-SB | Site de Backup | Site de backup des sauvegardes et coffres numériques
-SP | Site Principal | Site central de l'infrastructure et de service de M&A Inc. 
-SD | Site de Dévolution | Site de survie de M&A Inc., contient une réplication de l'infrastructure et services nécessaires en cas de coupure sur SP
-SA | Site Autonome | Site contenant une infrastructure autonome | Peut être déconnecté du SP
-SL | Site Local | Site local ne contenant que l'infrastructure "utilisateurs" | Doit être connecté au SA ou SP
-SM | Site Mobile | Site fonctionnant en autonomie | N'a que des connections épisodiques au SP 
+Type de site | Nom complet du site | Explication | Particularité |
+SB | Site de Backup | Site de backup des sauvegardes et coffres numériques |
+SP | Site Principal | Site central de l'infrastructure et de service de M&A Inc. |
+SD | Site de Dévolution | Site de survie de M&A Inc., contient une réplication de l'infrastructure et services nécessaires en cas de coupure sur SP |
+SA | Site Autonome | Site contenant une infrastructure autonome | Peut être déconnecté du SP |
+SL | Site Local | Site local ne contenant que l'infrastructure "utilisateurs" | Doit être connecté au SA ou SP |
+SM | Site Mobile | Site fonctionnant en autonomie | N'a que des connections épisodiques au SP |
 
 Sur la partie logs management, la hierarchie est telle quelle suivant les sites :
 * relay-SL envoie tous les logs au relay-SA ou relay-SP auquel il est connecté.
