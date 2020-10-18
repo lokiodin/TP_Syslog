@@ -45,6 +45,24 @@ Sur la partie logs management, la hierarchie est telle quelle suivant les sites 
 * relay-SP stocke les logs pendant un certain temps. Réplique sa base de donnée dans le relay-SD.
 * relay-SB est le serveur syslog ayant tous les logs d'une durée de moins de 7 ans en sauvegarde.
 
+### Architecture choisie
+
+Nous avons choisi de respecter la hierarchie entre les sites.
+* Les relay-SL envoient les logs aux relay-SA,
+* Les relay-SA envoient les logs au relay-SP,
+* Les relay-SM envoient les logs au relay-SP,
+* Le relay-SP réplique ses logs au relay-SD,
+* Les relay-SP et relay-SD envoient leurs logs au relay-SB pour la sauvegardes des logs.
+
+Les envois de logs se font en TCP sur le port 6514, chiffrés en TLS. Pour cela il faut diposer d'une infrastructure CA.
+
+
+
+### COnfiguration TLS
+
+#### Creation de la CA
+
+
 
 
 ## Annexes

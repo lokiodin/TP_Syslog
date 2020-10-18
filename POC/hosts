@@ -1,0 +1,16 @@
+127.0.0.1       localhost
+127.0.1.1       debian.mainc    debian
+
+192.168.1.58    relay-sp
+192.168.1.46    relay-sd
+192.168.1.45    relay-sb
+192.168.1.47    relay-sa
+192.168.1.57    relay-sl
+192.168.1.48    relay-sm
+
+
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
