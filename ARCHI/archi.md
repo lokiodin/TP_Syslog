@@ -55,14 +55,35 @@ Nous avons choisi de respecter la hierarchie entre les sites.
 * Les relay-SP et relay-SD envoient leurs logs au relay-SB pour la sauvegardes des logs.
 
 Les envois de logs se font en TCP sur le port 6514, chiffrés en TLS. Pour cela il faut diposer d'une infrastructure CA.
+Pour tester l'architecture, nous avons utilisé l'outil `openssl`.
+Voici un example des commandes :
+```bash
+cd CA
+mkdir certs crl newcerts private
+echo "01" > serial
+cp /dev/null index.txt
+cp /etc/ssl/openssl.cnf openssl.cnf
+# Changer la ligne
+# [ CA_default ]
+# dir             = ./demoCA              # Where everything is kept
+# certs           = $dir/certs            # Where the issued certs are kept
+# en 
+# [ CA_default ]
+# dir             = .                     # Where everything is kept
+# certs           = $dir/certs            # Where the issued certs are kept
 
+# Generer le certificat de la CA
+openssl req -new -x509 -keyout private/cakey.pem -out cacert.pem -days 365 -config openssl.cnf
 
+# Generer les certificat des clients
+nomSite=relay-sa
+openssl req -nodes -new -x509 -keyout $nomSitekey.pem -out $nomSitereq.pem -days 365 -config openssl.cnf
+openssl x509 -x509toreq -in $nomSitereq.pem -signkey $nomSitekey.pem -out tmp$nomSite.pem
+openssl ca -config openssl.cnf -policy policy_anything -out $nomSitecert.pem -infiles tmp$nomSite.pem
+rm tmp$nomSite.pem
+```
 
-### COnfiguration TLS
-
-#### Creation de la CA
-
-
+Il faut mettre les fichiers ``$nomSitekey.pem`` et ``$nomSitecert.pem`` dans le repertoire ``/etc/syslog-ng/cert.d/`` et ``cakey.pem`` dans le repertoire ``/etc/syslog-ng/ca.d/``.
 
 
 ## Annexes
