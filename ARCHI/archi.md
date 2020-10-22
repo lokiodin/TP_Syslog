@@ -10,7 +10,7 @@
 | SA | Site Autonome |
 | SL | Site Local |
 | SM | Site Mobile  |
-| relay-SB|SP|SD|SA|SL|SM | Serveur Syslog du site en question |
+| relay-[SB/SP/SD/SA/SL/SM] | Serveur Syslog du site en question |
 
 
 ## Contexte
