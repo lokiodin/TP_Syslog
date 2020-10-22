@@ -160,6 +160,23 @@ $ tree /var/log/syslog-ng/
     └── 2018.10.22.bz2
 ```
 
+|Site|Example|
+|-----|-----|
+|SA|
+``
+$ tree /var/log/syslog-ng/
+/var/log/syslog-ng
+├── 2020.10.22
+│   ├── logs_SA-QUEBEC.log
+│   ├── logs_SL-NYC.log
+│   └── logs_SL-RIO.log
+└── 2020.10.23
+    ├── logs_SA-QUEBEC.log
+    ├── logs_SL-NYC.log
+    └── logs_SL-RIO.log
+``
+
+
 Les relays des sites de type ``SA`` enregistrerons leur logs en local pour une durée de 2 ans.  
 Les relays des sites de type ``SP`` et ``SD`` enregistrerons leur logs en local pour une durée totale de 7 ans. Au bout de 2 ans les logs seront compressés au format bzip2 (format de compression choisi par son rapport de taux de compression / temps).
 Pour le site de backup ``SB``, par sa fonction de backup, sauvegardera aussi les logs pendant 7 ans dans le format bzip2.
