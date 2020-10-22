@@ -181,6 +181,11 @@ Buffer des logs : Un buffer de logs est configuré (en mode reliable) pour palli
 
 
 
+Filtres : @Théo Sigari
+
+
+
+
 ## Annexes
 
 ### Récapitulatif des emplacements des fichiers
