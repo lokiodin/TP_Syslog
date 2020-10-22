@@ -3,7 +3,7 @@
 ## Vocabulaire
 
 | Mot utilisé | Explication |
-| ------------- | ------------- |
+| ------------------------- | ------------------------- |
 | SB | Site de Backup |
 | SP | Site Principal |
 | SD | Site de Dévolution |
@@ -86,6 +86,7 @@ openssl x509 -x509toreq -in $nomSitereq.pem -signkey $nomSitekey.pem -out tmp$no
 openssl ca -config openssl.cnf -policy policy_anything -out $nomSitecert.pem -infiles tmp$nomSite.pem
 rm tmp$nomSite.pem
 ```
+
 **Attention** : Ne pas oublier 
 ```bash
 ln -s /etc/syslog-ng/ca.d/cacert.pem /etc/syslog-ng/ca.d/$(openssl x509 -noout -hash -in /etc/syslog-ng/ca.d/cacert.pem).0
@@ -98,7 +99,7 @@ Il faut mettre les fichiers ``$nomSitekey.pem`` et ``$nomSitecert.pem`` dans le 
 Les logs enregistrés en local seront tous sauvegardés dans le répertoire parent ``/var/log/syslog-ng/``, dans le repertoire ``ANNEE.MOI.JOUR/``. Il y aura donc un repertoire par jour dans le dossier ``/var/log/syslog-ng/``. Enfin, un fichier log sera enregistré par site.
 Dans le cas du site de backup, un dossier ``/var/log/syslog-ng/archive`` sera créé et les logs comppréssés seront dedans.
 
-Par exemple nous pourrions retrouver l'arboressence ci-dessous sur un ``SA``:
+Par exemple nous pourrions retrouver l'arborescence ci-dessous sur un ``SA`` :
 ```bash
 $ tree /var/log/syslog-ng/
 /var/log/syslog-ng
@@ -111,6 +112,7 @@ $ tree /var/log/syslog-ng/
     ├── logs_SL-NYC.log
     └── logs_SL-RIO.log
 ```
+
 Exemple sur un site ``SP``, ``SD`` :
 ```bash
 $ tree /var/log/syslog-ng/
@@ -132,6 +134,7 @@ $ tree /var/log/syslog-ng/
     ├── logs_SL-RIO.log
     └── logs_SP-MONTREUIL.log
 ```
+
 Et sur un site ``SB`` :
 ```bash
 $ tree /var/log/syslog-ng/
@@ -170,9 +173,10 @@ Les scripts bash des relay des site ``SA``, ``SP / SD`` et ``SB`` supprimeront l
 
 #### Les spécifités des configuration syslog-ng.conf
 
-Le failover : le failover est configuré en mode fallback (retour au plus vite vers le site primaire (ici, le ``SP``))
+Le failover : le failover est configuré en mode fallback (retour au plus vite vers le site primaire (ici, le ``SP``)).
+
 Site | Serveur Primaire destination | Serveur Secondaire destination | Serveur Tertiaire destination |
-| --- | --- | --- |
+| ------------ | ------------ | ------------ |
 | ``SA`` | ``SP`` | ``SD`` | ``SB`` |
 | ``SM`` | ``SP`` | ``SD`` | ``SB`` |
 | ``SL`` | ``SA`` | ``SP`` | ``SD`` |
@@ -191,7 +195,7 @@ Filtres : @Théo Sigari
 ### Récapitulatif des emplacements des fichiers
 
 |  | Emplacement |
-|---|---|
+| ------------ | ------------ |
 |configuration syslog|``/etc/syslog-ng/syslog-ng.conf``|
 |certificat CA|``/etc/syslog-ng/ca.d/cacert.pem``|
 |certificat client|``/etc/syslog-ng/cert.d/relay<nomSite>cert.pem``|
