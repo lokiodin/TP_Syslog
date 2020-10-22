@@ -171,7 +171,7 @@ Les scripts bash des relay des site ``SA``, ``SP / SD`` et ``SB`` supprimeront l
 #### Les spécifités des configuration syslog-ng.conf
 
 Le failover : le failover est configuré en mode fallback (retour au plus vite vers le site primaire (ici, le ``SP``))
-| Site | Serveur Primaire destination | Serveur Secondaire destination | Serveur Tertiaire destination |
+Site | Serveur Primaire destination | Serveur Secondaire destination | Serveur Tertiaire destination |
 | --- | --- | --- |
 | ``SA`` | ``SP`` | ``SD`` | ``SB`` |
 | ``SM`` | ``SP`` | ``SD`` | ``SB`` |
