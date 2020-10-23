@@ -1,9 +1,13 @@
 # Architecture logs management M&A Inc.
 > Auteurs :
 >   David DESCHAMPS
+>
 >   David MONTEIRO
+>
 >   Théo LAW BO KANG
+>
 >   Théo SIGARI
+>
 >   Romain BOIREAU
 
 
@@ -22,24 +26,21 @@
 
 ## Contexte
 
-> Vous été mandaté par l'entreprise Mercenaires & Associés Inc. (M&A Inc.) pour rénover le système de rénovation.
+> Vous avez été mandaté par l'entreprise Mercenaires & Associés Inc. (M&A Inc.) pour rénover le système de rénovation.
 > Le client vous a donné les schémas de leur infrastructure actuelle.
 
 
 ## Architecture actuelle
-Schéma de l'infrastructure de M&A Inc. :
-![Figure 1](schema_infra.png "Schéma Infrastructure M&A actuelle")
-
 Schéma de l'implantation des sites :
-![Figure 2](schema_infra_implantation_sites.png "Schéma de l'implantation des sites de M&A Inc.")
+![Figure 1](schema_infra_implantation_sites.png "Schéma de l'implantation des sites de M&A Inc.")
 
 Schéma de principe :
-![Figure 3](schema_principe.png "Schéma de principe M&A Inc.")
+![Figure 2](schema_principe.png "Schéma de principe M&A Inc.")
 
 
 ### Architecture et solutions choisies
 
-Nous avons choisi de respecter la hierarchie entre les sites suivantes :
+Nous avons choisi de respecter la hiérarchie entre les sites suivantes :
 * Les relay-SL envoient les logs aux relay-SA,
 * Les relay-SA envoient les logs au relay-SP,
 * Les relay-SM envoient les logs au relay-SP,
@@ -84,12 +85,12 @@ $ rm tmp$nomSite.pem
 $ ln -s /etc/syslog-ng/ca.d/cacert.pem /etc/syslog-ng/ca.d/$(openssl x509 -noout -hash -in /etc/syslog-ng/ca.d/cacert.pem).0
 ```
 
-Il faut mettre les fichiers ``$nomSitekey.pem`` et ``$nomSitecert.pem`` dans le repertoire ``/etc/syslog-ng/cert.d/`` et ``cakey.pem`` dans le repertoire ``/etc/syslog-ng/ca.d/``.
+Il faut mettre les fichiers ``$nomSitekey.pem`` et ``$nomSitecert.pem`` dans le répertoire ``/etc/syslog-ng/cert.d/`` et ``cakey.pem`` dans le répertoire ``/etc/syslog-ng/ca.d/``.
 
 #### Partie sauvegarde des logs
 
-Les logs enregistrés en local seront tous sauvegardés dans le répertoire parent ``/var/log/syslog-ng/``, dans le repertoire ``ANNEE.MOI.JOUR/``. Il y aura donc un repertoire par jour dans le dossier ``/var/log/syslog-ng/``. Enfin, un fichier log sera enregistré par site.
-Dans le cas du site de backup, un dossier ``/var/log/syslog-ng/archive`` sera créé et les logs comppréssés seront dedans.
+Les logs enregistrés en local seront tous sauvegardés dans le répertoire parent ``/var/log/syslog-ng/``, dans le répertoire ``ANNEE.MOI.JOUR/``. Il y aura donc un répertoire par jour dans le dossier ``/var/log/syslog-ng/``. Enfin, un fichier log sera enregistré par site.
+Dans le cas du site de backup, un dossier ``/var/log/syslog-ng/archive`` sera créé et les logs compressés seront dans celui-ci.
 
 Par exemple nous pourrions retrouver l'arborescence ci-dessous sur un ``SA`` :
 ```sh
@@ -155,12 +156,12 @@ $ tree /var/log/syslog-ng/
 Les relays des sites de type ``SA`` enregistrerons leur logs en local pour une durée de 2 ans.  
 Les relays des sites de type ``SP`` et ``SD`` enregistrerons leur logs en local pour une durée totale de 7 ans. Au bout de 2 ans les logs seront compressés au format bzip2 (format de compression choisi par son rapport de taux de compression / temps).
 Pour le site de backup ``SB``, par sa fonction de backup, sauvegardera aussi les logs pendant 7 ans dans le format bzip2.
-Les relays des sites de type ``SM`` enregistreront leur logs en local jusqu'au moment où ils seront connectés au site SP. Ils envoieront leur logs mais en flux non prioritaire poour eviter de ralentir les applications du client prioritaires.
-Les sites dit ``SL``, les relays n'auront pas de logs en local car ils sont forcement connecté à un site dit ``SA``.
+Les relays des sites de type ``SM`` enregistreront leur logs en local jusqu'au moment où ils seront connectés au site SP. Ils envoieront leur logs mais en flux non prioritaire pour eviter de ralentir les applications du client prioritaires.
+Les sites dit ``SL``, les relays n'auront pas de logs en local car ils sont forcément connectés à un site dit ``SA``.
 
 
 Les opérations de compression et suppression des logs se font à l'aide de script bash. Syslog-ng ne conseille pas l'utilisation de logrotate pour une infrastructure syslog centralisé.
-Les scripts bash des relay des site ``SA``, ``SP / SD`` et ``SB`` supprimeront les logs respectivement au bout de 2, 7 et 7 ans. De plus le script bash du ``SB`` comprimera les logs de plus de 2 ans. Ils seront lancés tout les jours à l'aide de cronjobs.
+Les scripts bash des relay des sites ``SA``, ``SP / SD / SB`` supprimeront les logs respectivement au bout de 2 et 7 ans. De plus le script bash du site ``SB`` comprimera les logs de plus de 2 ans. Ils seront lancés tout les jours à l'aide de cronjobs.
 
 
 #### Les spécifités des configurations syslog-ng.conf
@@ -179,11 +180,11 @@ Filtres : Des filtres sont créés pour réduire la quantité de logs.
 Les logs de niveau entre 0 et 4 ainsi que les logs de niveau 6 sont gardés.
 Nous supprimons aussi les logs de keepalive de syslog-ng.
 
-Les relay écoutent sur leur ports 514 en TCP uniquement pour les devices du site en question.
-Hors du site ils interragissent avec les autres relay en SSL vu plus haut.
+Les relays écoutent sur leur ports 514 en TCP uniquement pour les devices du site en question.
+Hors du site ils interagissent avec les autres relays en SSL (partie vue plus haut).
 
 
-#### Crontasks
+#### Cron Tasks
 
 Nous avons créé 3 scripts :
 |Script|Relay correspondant|
@@ -192,7 +193,7 @@ Nous avons créé 3 scripts :
 |``cron_syslog_sp-sd.sh``|``SP`` et ``SD``|
 |``cron_syslog_sb.sh``|``SB``|
 
-Ces scripts seront sur le relay des site correspondant dans le repertoire ``/etc/cron.daily/``.
+Ces scripts seront sur le relay des sites correspondant dans le répertoire ``/etc/cron.daily/``.
 
 ## Annexes
 
@@ -205,4 +206,5 @@ Ces scripts seront sur le relay des site correspondant dans le repertoire ``/etc
 |certificat client|``/etc/syslog-ng/cert.d/relay<nomSite>cert.pem``|
 |clé client|``/etc/syslog-ng/cert.d/relay<nomSite>key.pem``|
 |logs|``/var/log/syslog-ng/``|
-|script bash cron|``
+|script bash cron des ``SA``, ``SP``, ``SD`` ou ``SB`` |``/etc/cron.daily/cron_syslog``|
+|script crontab ``syslog-ng``|``/etc/cron.d/syslog-ng``|
