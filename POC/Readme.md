@@ -5,16 +5,22 @@
 ## Fichiers pour le poc
 
 ``syslog-ng`` : fichier pour le crontab des relays.
+
 ``cron_syslog_*`` : fichier cron pour les sites.
+
 ``client.conf`` : exemple de conf syslog-ng poour un client.
+
 ``relay_*`` : fichier de configuration syslog-ng pour les relays des sites.
+
 ``hosts`` : fichier pour faire office de DNS interne des VM (contient les IP des VM de tests).
+
 Répertoire ``CA`` : contient tous les fichiers lié à la CA.
 
 
 ## Fichier d'automatisation de transfert de fichier
 
 ``script.sh`` pour automatiser le transfert des configurations syslog-ng et autres.
+
 ``script2.sh`` pour automatiser le transfert des fichier de la CA.
 
 ## Création et Conf CA + Infos sur TLS/SSL dans syslog-ng
