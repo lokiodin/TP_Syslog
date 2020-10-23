@@ -1,14 +1,23 @@
+
+# Fichier hosts à mettre dans chaque relay dans le /etc/hosts
+
 127.0.0.1       localhost
 127.0.1.1       debian.mainc    debian
 
-192.168.1.58    relay-sp
-192.168.1.46    relay-sd
-192.168.1.45    relay-sb
-192.168.1.47    relay-sa
-192.168.1.57    relay-sl
-192.168.1.48    relay-sm
+# 192.168.1.58    relay-sp
+# 192.168.1.46    relay-sd
+# 192.168.1.45    relay-sb
+# 192.168.1.47    relay-sa
+# 192.168.1.57    relay-sl
+# 192.168.1.48    relay-sm
 
 
+192.168.1.146    relay-sp
+192.168.1.43    relay-sd
+192.168.1.4    relay-sb
+192.168.1.54    relay-sa
+192.168.1.25    relay-sl
+192.168.1.157    relay-sm
 
 # The following lines are desirable for IPv6 capable hosts
 ::1     localhost ip6-localhost ip6-loopback

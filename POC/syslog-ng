@@ -1,0 +1,6 @@
+# /etc/cron.d/syslog-ng: crontab entries for the syslog-ng package
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+01 * * * * root /etc/cron.daily/cron_syslog

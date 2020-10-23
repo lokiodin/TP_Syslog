@@ -1,4 +1,11 @@
 # Architecture logs management M&A Inc.
+> Auteurs :
+>   David DESCHAMPS
+>   David MONTEIRO
+>   Théo LAW BO KANG
+>   Théo SIGARI
+>   Romain BOIREAU
+
 
 ## Vocabulaire
 
@@ -26,28 +33,13 @@ Schéma de l'infrastructure de M&A Inc. :
 Schéma de l'implantation des sites :
 ![Figure 2](schema_infra_implantation_sites.png "Schéma de l'implantation des sites de M&A Inc.")
 
-### Explication
+Schéma de principe :
+![Figure 3](schema_principe.png "Schéma de principe M&A Inc.")
 
-Les particularité des divers sites :
-Type de site | Nom complet du site | Explication | Particularité |
-| ------------- | ------------- | ------------- | ------------- |
-SB | Site de Backup | Site de backup des sauvegardes et coffres numériques |
-SP | Site Principal | Site central de l'infrastructure et de service de M&A Inc. |
-SD | Site de Dévolution | Site de survie de M&A Inc., contient une réplication de l'infrastructure et services nécessaires en cas de coupure sur SP |
-SA | Site Autonome | Site contenant une infrastructure autonome | Peut être déconnecté du SP |
-SL | Site Local | Site local ne contenant que l'infrastructure "utilisateurs" | Doit être connecté au SA ou SP |
-SM | Site Mobile | Site fonctionnant en autonomie | N'a que des connections épisodiques au SP |
-
-Sur la partie logs management, la hierarchie est telle quelle suivant les sites :
-* relay-SL envoie tous les logs au relay-SA ou relay-SP auquel il est connecté.
-* relay-SA peut stocker une certaine quantité de logs. Il envoie les logs au SP lorsqu'il le peut.
-* relay-SM peut stocker les logs en local. **METTRE QUELQUE CHOSE POUR L'ENVOIE DES LOGS LORSQU'IL EST CONNECTE**
-* relay-SP stocke les logs pendant un certain temps. Réplique sa base de donnée dans le relay-SD.
-* relay-SB est le serveur syslog ayant tous les logs d'une durée de moins de 7 ans en sauvegarde.
 
 ### Architecture et solutions choisies
 
-Nous avons choisi de respecter la hierarchie entre les sites.
+Nous avons choisi de respecter la hierarchie entre les sites suivantes :
 * Les relay-SL envoient les logs aux relay-SA,
 * Les relay-SA envoient les logs au relay-SP,
 * Les relay-SM envoient les logs au relay-SP,
@@ -55,18 +47,18 @@ Nous avons choisi de respecter la hierarchie entre les sites.
 * Les relay-SP et relay-SD envoient leurs logs au relay-SB pour la sauvegardes des logs.
 Le coeur syslog est donc le site ``SP``. ``SD`` étant en réplication et ``SB`` le site de backup.
 
-Les envois de logs se font en TCP sur le port 6514, chiffrés en TLS. Pour cela il faut diposer d'une infrastructure CA.
+Les envois de logs se font en TCP sur le port 6514, chiffrés en TLS/SSL. Pour cela il faut diposer d'une infrastructure CA.
 
 #### Partie CA
 
 Pour tester l'architecture, nous avons utilisé l'outil `openssl`.
 Voici un example des commandes :
-```bash
-cd CA
-mkdir certs crl newcerts private
-echo "01" > serial
-cp /dev/null index.txt
-cp /etc/ssl/openssl.cnf openssl.cnf
+```sh
+$ cd CA
+$ mkdir certs crl newcerts private
+$ echo "01" > serial
+$ cp /dev/null index.txt
+$ cp /etc/ssl/openssl.cnf openssl.cnf
 # Changer la ligne
 # [ CA_default ]
 # dir             = ./demoCA              # Where everything is kept
@@ -77,19 +69,19 @@ cp /etc/ssl/openssl.cnf openssl.cnf
 # certs           = $dir/certs            # Where the issued certs are kept
 
 # Generer le certificat de la CA
-openssl req -new -x509 -keyout private/cakey.pem -out cacert.pem -days 365 -config openssl.cnf
+$ openssl req -new -x509 -keyout private/cakey.pem -out cacert.pem -days 365 -config openssl.cnf
 
 # Generer les certificat des clients
-nomSite=relay-sa
-openssl req -nodes -new -x509 -keyout $nomSitekey.pem -out $nomSitereq.pem -days 365 -config openssl.cnf
-openssl x509 -x509toreq -in $nomSitereq.pem -signkey $nomSitekey.pem -out tmp$nomSite.pem
-openssl ca -config openssl.cnf -policy policy_anything -out $nomSitecert.pem -infiles tmp$nomSite.pem
-rm tmp$nomSite.pem
+$ nomSite=relay-sa
+$ openssl req -nodes -new -x509 -keyout $nomSitekey.pem -out $nomSitereq.pem -days 365 -config openssl.cnf
+$ openssl x509 -x509toreq -in $nomSitereq.pem -signkey $nomSitekey.pem -out tmp$nomSite.pem
+$ openssl ca -config openssl.cnf -policy policy_anything -out $nomSitecert.pem -infiles tmp$nomSite.pem
+$ rm tmp$nomSite.pem
 ```
 
-**Attention** : Ne pas oublier 
-```bash
-ln -s /etc/syslog-ng/ca.d/cacert.pem /etc/syslog-ng/ca.d/$(openssl x509 -noout -hash -in /etc/syslog-ng/ca.d/cacert.pem).0
+**Attention** : Ne pas oublier lors de changement du certificat :
+```sh
+$ ln -s /etc/syslog-ng/ca.d/cacert.pem /etc/syslog-ng/ca.d/$(openssl x509 -noout -hash -in /etc/syslog-ng/ca.d/cacert.pem).0
 ```
 
 Il faut mettre les fichiers ``$nomSitekey.pem`` et ``$nomSitecert.pem`` dans le repertoire ``/etc/syslog-ng/cert.d/`` et ``cakey.pem`` dans le repertoire ``/etc/syslog-ng/ca.d/``.
@@ -100,7 +92,7 @@ Les logs enregistrés en local seront tous sauvegardés dans le répertoire pare
 Dans le cas du site de backup, un dossier ``/var/log/syslog-ng/archive`` sera créé et les logs comppréssés seront dedans.
 
 Par exemple nous pourrions retrouver l'arborescence ci-dessous sur un ``SA`` :
-```bash
+```sh
 $ tree /var/log/syslog-ng/
 /var/log/syslog-ng
 ├── 2020.10.22
@@ -114,7 +106,7 @@ $ tree /var/log/syslog-ng/
 ```
 
 Exemple sur un site ``SP``, ``SD`` :
-```bash
+```sh
 $ tree /var/log/syslog-ng/
 /var/log/syslog-ng
 ├── 2020.10.22
@@ -171,24 +163,36 @@ Les opérations de compression et suppression des logs se font à l'aide de scri
 Les scripts bash des relay des site ``SA``, ``SP / SD`` et ``SB`` supprimeront les logs respectivement au bout de 2, 7 et 7 ans. De plus le script bash du ``SB`` comprimera les logs de plus de 2 ans. Ils seront lancés tout les jours à l'aide de cronjobs.
 
 
-#### Les spécifités des configuration syslog-ng.conf
+#### Les spécifités des configurations syslog-ng.conf
 
 Le failover : le failover est configuré en mode fallback (retour au plus vite vers le site primaire (ici, le ``SP``)).
 
 Site | Serveur Primaire destination | Serveur Secondaire destination | Serveur Tertiaire destination |
 |:------------:|:------------:|:------------:|:------------:|
-| ``SA`` | ``SP`` | ``SD`` | ``SB`` |
-| ``SM`` | ``SP`` | ``SD`` | ``SB`` |
+| ``SA`` | ``SP`` | ``SD`` |  |
+| ``SM`` | ``SP`` | ``SD`` |  |
 | ``SL`` | ``SA`` | ``SP`` | ``SD`` |
 
 Buffer des logs : Un buffer de logs est configuré (en mode reliable) pour pallier les pertes de logs lors d'envoi/failover.
 
+Filtres : Des filtres sont créés pour réduire la quantité de logs.
+Les logs de niveau entre 0 et 4 ainsi que les logs de niveau 6 sont gardés.
+Nous supprimons aussi les logs de keepalive de syslog-ng.
+
+Les relay écoutent sur leur ports 514 en TCP uniquement pour les devices du site en question.
+Hors du site ils interragissent avec les autres relay en SSL vu plus haut.
 
 
-Filtres : @Théo Sigari
+#### Crontasks
 
+Nous avons créé 3 scripts :
+|Script|Relay correspondant|
+|------|-----|
+|``cron_syslog_sa.sh``|``SA``|
+|``cron_syslog_sp-sd.sh``|``SP`` et ``SD``|
+|``cron_syslog_sb.sh``|``SB``|
 
-
+Ces scripts seront sur le relay des site correspondant dans le repertoire ``/etc/cron.daily/``.
 
 ## Annexes
 

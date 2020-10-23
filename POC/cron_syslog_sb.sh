@@ -5,44 +5,36 @@
 # Et de compresser/archiver les logs qui ont plus de 2 ans.
 
 
-cd test2
-if ! [ -d ./archive ]; then
-    mkdir ./archive
+dir='/var/log/syslog-ng'
+if ! [ -d $dir/archive ]; then
+    mkdir $dir/archive
 fi
 
 # Sur les fichier logs
-lst=$(ls | grep -E "[0-9]{4}.[0-9]{2}.[0-9]{2}.log")
-
+lst=$(ls $dir | grep -E "[0-9]{4}.[0-9]{2}.[0-9]{2}")
 
 for file in $lst; do
 
-    # echo $file | grep -q -E "[0-9]{4}.[0-9]{2}.[0-9]{2}.log"
-    # echo "j\'ai le fichier $file"
-    name=${file#./*}
-    name=${name%*.log}
-    # echo "Date $file"
-    YEAR=$(echo $name | sed 's/\./ /g' | awk '{print $1}')
-    MONTH=$(echo $name | sed 's/\./ /g' | awk '{print $2}')
-    DAY=$(echo $name | sed 's/\./ /g' | awk '{print $3}')
+    YEAR=$(echo $file | sed 's/\./ /g' | awk '{print $1}')
+    MONTH=$(echo $file | sed 's/\./ /g' | awk '{print $2}')
+    DAY=$(echo $file | sed 's/\./ /g' | awk '{print $3}')
+
 
     ## Compression des logs
     if [ $(expr $(date +%s) - $(date --date="$YEAR/$MONTH/$DAY" +%s)) -ge 63072000 ]; then
-        # echo "Je supprime le fichier $file car il a plus de 2 ans !!"
-        tar -cjf ./archive/$YEAR.$MONTH.$DAY.bz2 ./$file
-        rm -f ./$file
+        echo "Je commprese le fichier $dir/$file car il a plus de 2 ans !!"
+        tar -cjf $dir/archive/$YEAR.$MONTH.$DAY.bz2 $dir/$file
+        rm -rf $dir/$file
     fi
 done
 
-cd ./archive
-lst=$(ls | grep -E "[0-9]{4}.[0-9]{2}.[0-9]{2}.zip")
+dir="$dir/archive"
+lst=$(ls $dir | grep -E "[0-9]{4}.[0-9]{2}.[0-9]{2}.bz2")
 
 for file in $lst; do
 
-    # echo $file | grep -q -E "[0-9]{4}.[0-9]{2}.[0-9]{2}.log"
-    # echo "j\'ai le fichier $file"
-    name=${file#./*}
-    name=${name%*.log}
-    # echo "Date $file"
+
+    name=${file%*.bz2}
     YEAR=$(echo $name | sed 's/\./ /g' | awk '{print $1}')
     MONTH=$(echo $name | sed 's/\./ /g' | awk '{print $2}')
     DAY=$(echo $name | sed 's/\./ /g' | awk '{print $3}')
@@ -50,7 +42,7 @@ for file in $lst; do
     ## Supression
     # En epoch time : 7ans == 220838400
     if [ $(expr $(date +%s) - $(date --date="$YEAR/$MONTH/$DAY" +%s)) -ge 220838400 ]; then
-        # echo "Je supprime le fichier $file car il a plus de 2 ans !!"
-        rm -rf $file
+        echo "Je supprime le fichier $dir/$file car il a plus de 7 ans !!"
+        rm -rf $dir/$file
     fi
 done
